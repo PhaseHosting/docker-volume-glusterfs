@@ -5,7 +5,7 @@
 
 BUILD               = $(shell git rev-parse HEAD)
 
-PLATFORMS           = linux_amd64 linux_386 linux_arm darwin_amd64 darwin_386 freebsd_amd64 freebsd_386
+PLATFORMS           = linux_amd64 linux_386 linux_arm darwin_amd64 darwin_386 freebsd_amd64 freebsd_386 windows_386 windows_amd64
 
 FLAGS_all           = GOPATH=$(GOPATH)
 FLAGS_linux_amd64   = $(FLAGS_all) GOOS=linux GOARCH=amd64
@@ -43,6 +43,7 @@ deps:
 	go get github.com/coreos/go-systemd/activation
 	go get github.com/opencontainers/runc/libcontainer/user
 	go get -d github.com/Microsoft/go-winio
+	go get golang.org/x/sys/windows
 .PHONY: deps
 
 install: guard-VERSION build
