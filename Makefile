@@ -43,6 +43,7 @@ deps:
 	go get github.com/coreos/go-systemd/activation
 	go get github.com/opencontainers/runc/libcontainer/user
 	go get -d github.com/Microsoft/go-winio
+	go get golang.org/x/sys/windows
 .PHONY: deps
 
 install: guard-VERSION build
