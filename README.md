@@ -3,6 +3,7 @@
 This plugin uses GlusterFS as distributed data storage for containers.
 
 [![Release](https://img.shields.io/github/release/watson81/docker-volume-glusterfs.svg)](https://github.com/watson81/docker-volume-glusterfs/releases/latest)
+[![Maintenance](https://img.shields.io/maintenance/yes/2017.svg)]() 
 [![TravisCI](https://travis-ci.org/watson81/docker-volume-glusterfs.svg)](https://travis-ci.org/watson81/docker-volume-glusterfs)
 
 ## Installation
