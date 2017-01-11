@@ -1,0 +1,14 @@
+[Unit]
+Description=GlusterFS support for Docker Volumes
+Documentation=https://github.com/watson81/docker-volume-glusterfs
+After=network.target firewalld.service
+Before=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/docker-volume-glusterfs -servers Add:Your:Servers:Here
+KillSignal=SIGINT
+
+[Install]
+Alias=docker-glusterfs
+WantedBy=multi-user.target docker.service
