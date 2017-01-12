@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	"github.com/namsral/flag"
 	"fmt"
 	"os"
 	"path/filepath"
