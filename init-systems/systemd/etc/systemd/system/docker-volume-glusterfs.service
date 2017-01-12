@@ -7,7 +7,7 @@ Before=docker.service
 [Service]
 Type=simple
 EnvironmentFile=/etc/docker-volume-glusterfs.conf
-ExecStart=/usr/local/sbin/docker-volume-glusterfs -servers ${DVGFS_SERVERS}
+ExecStart=/usr/local/sbin/docker-volume-glusterfs
 KillSignal=SIGINT
 
 [Install]
