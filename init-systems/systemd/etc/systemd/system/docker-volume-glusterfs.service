@@ -10,5 +10,5 @@ ExecStart=/usr/local/sbin/docker-volume-glusterfs -servers Add:Your:Servers:Here
 KillSignal=SIGINT
 
 [Install]
-Alias=docker-glusterfs
+Alias=docker-glusterfs.service
 WantedBy=multi-user.target docker.service
