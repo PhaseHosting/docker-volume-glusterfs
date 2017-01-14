@@ -6,6 +6,8 @@
 BUILD               = $(shell git rev-parse HEAD)
 
 PLATFORMS           = linux_amd64 linux_386 linux_arm darwin_amd64 darwin_386 freebsd_amd64 freebsd_386 windows_386 windows_amd64
+PLATFORMS_TAR       = linux_amd64 linux_386 linux_arm darwin_amd64 darwin_386 freebsd_amd64 freebsd_386
+PLATFORMS_ZIP       = darwin_amd64 darwin_386 windows_386 windows_amd64
 
 FLAGS_all           = GOPATH=$(GOPATH)
 FLAGS_linux_amd64   = $(FLAGS_all) GOOS=linux GOARCH=amd64
@@ -72,8 +74,8 @@ build-all: deps guard-VERSION $(foreach PLATFORM,$(PLATFORMS),dist/$(PLATFORM)/.
 .PHONY: build-all
 
 dist: guard-VERSION build-all \
-$(foreach PLATFORM,$(PLATFORMS),dist/docker-volume-glusterfs-$(VERSION)-$(PLATFORM).zip) \
-$(foreach PLATFORM,$(PLATFORMS),dist/docker-volume-glusterfs-$(VERSION)-$(PLATFORM).tar.gz)
+$(foreach PLATFORM,$(PLATFORMS_ZIP),dist/docker-volume-glusterfs-$(VERSION)-$(PLATFORM).zip) \
+$(foreach PLATFORM,$(PLATFORMS_TAR),dist/docker-volume-glusterfs-$(VERSION)-$(PLATFORM).tar.gz)
 .PHONY:	dist
 
 release: guard-VERSION dist
