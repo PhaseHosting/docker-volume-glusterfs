@@ -1,8 +1,6 @@
-Copyright (c) for portions of this project are held by David Calavera
-(2015) as part of project https://github.com/calavera/docker-volume-glusterfs.
-While he did not explicitly claim copyright, portions are also held
-by Andre Markwalder (2016) as part of project https://github.com/amarkwalder/docker-volume-glusterfs.
-All other copyright are held by Patrick Watson (2017).
+Copyright (c) 2017 Patrick Watson
+Copyright (c) 2016 Andre Markwalder for portions of this project as part of project https://github.com/amarkwalder/docker-volume-glusterfs.
+Copyright (c) 2015 David Calavera for portions of this project as part of project https://github.com/calavera/docker-volume-glusterfs.
 
 ===== MIT LICENSE =====
 
