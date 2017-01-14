@@ -8,7 +8,9 @@ This plugin uses GlusterFS as distributed data storage for containers.
 
 ## Installation
 
-Using go (until we get proper binaries):
+You can download pre-compiled binaries for variety of operating systems and platforms on the [releases page](https://github.com/watson81/docker-volume-glusterfs/releases).
+
+Alternatively, you can compile and run the latest version using go:
 
 ```
 $ go get github.com/watson81/docker-volume-glusterfs
@@ -24,12 +26,12 @@ This plugin doesn't create volumes in your GlusterFS cluster yet, so you'll have
 $ sudo docker-volume-glusterfs -servers gfs-1:gfs-2:gfs-3
 ```
 
-We use the flag `-servers` to specify where to find the GlusterFS servers. The server names are separated by colon.
+We use the flag `-servers` to specify where to find the GlusterFS servers. The server names are separated by colons.
 
 2 - Start your docker containers with the option `--volume-driver=glusterfs` and use the first part of `--volume` to specify the remote volume that you want to connect to:
 
 ```
-$ sudo docker run --volume-driver glusterfs --volume datastore:/data alpine touch /data/helo
+$ sudo docker run --volume-driver glusterfs --volume datastore:/data alpine touch /data/hello
 ```
 
 See this video for a slightly longer usage explanation:
@@ -40,7 +42,7 @@ https://youtu.be/SVtsT9WVujs
 
 This extension can create volumes on the remote cluster if you install https://github.com/aravindavk/glusterfs-rest in one of the nodes of the cluster.
 
-You need to set two extra flags when you start the extension if you want to let containers to create their volumes on demand:
+You need to set two extra flags when you start the extension if you want to let containers create their volumes on demand:
 
 - rest: is the URL address to the remote api.
 - gfs-base: is the base path where the volumes will be created.
@@ -56,4 +58,4 @@ These volumes are replicated among all the peers in the cluster that you specify
 
 ## LICENSE
 
-MIT
+docker-volume-glusterfs is licensed under the [MIT](LICENSE) license.
