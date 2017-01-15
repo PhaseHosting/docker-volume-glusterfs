@@ -92,6 +92,7 @@ dist/%/.built:
 	rm -f $@
 	mkdir -p $(dir $@)
 	$(FLAGS_$*) go build -ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}" -o dist/$*/docker-volume-glusterfs$(EXTENSION_$*) $(wildcard ../*.go)
+	cp LICENSE $(dir $@)
 	touch $@
 
 dist/docker-volume-glusterfs-$(VERSION)-%.zip:
