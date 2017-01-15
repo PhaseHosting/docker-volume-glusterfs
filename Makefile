@@ -5,23 +5,16 @@
 
 BUILD               = $(shell git rev-parse HEAD)
 
-PLATFORMS           = linux_amd64 linux_386 linux_arm darwin_amd64 darwin_386 freebsd_amd64 freebsd_386 windows_386 windows_amd64
-PLATFORMS_TAR       = linux_amd64 linux_386 linux_arm darwin_amd64 darwin_386 freebsd_amd64 freebsd_386
-PLATFORMS_ZIP       = darwin_amd64 darwin_386 windows_386 windows_amd64
+PLATFORMS           = linux_amd64 linux_386 linux_arm darwin_amd64 freebsd_amd64 freebsd_386
+PLATFORMS_TAR       = linux_amd64 linux_386 linux_arm darwin_amd64 freebsd_amd64 freebsd_386
 
 FLAGS_all           = GOPATH=$(GOPATH)
 FLAGS_linux_amd64   = $(FLAGS_all) GOOS=linux GOARCH=amd64
 FLAGS_linux_386     = $(FLAGS_all) GOOS=linux GOARCH=386
 FLAGS_linux_arm     = $(FLAGS_all) GOOS=linux GOARCH=arm
 FLAGS_darwin_amd64  = $(FLAGS_all) GOOS=darwin GOARCH=amd64
-FLAGS_darwin_386    = $(FLAGS_all) GOOS=darwin GOARCH=386
 FLAGS_freebsd_amd64 = $(FLAGS_all) GOOS=freebsd GOARCH=amd64
 FLAGS_freebsd_386   = $(FLAGS_all) GOOS=freebsd GOARCH=386
-FLAGS_windows_386   = $(FLAGS_all) GOOS=windows GOARCH=386
-FLAGS_windows_amd64 = $(FLAGS_all) GOOS=windows GOARCH=amd64
-
-EXTENSION_windows_386=.exe
-EXTENSION_windows_amd64=.exe
 
 msg=@printf "\n\033[0;01m>>> %s\033[0m\n" $1
 
@@ -43,8 +36,6 @@ deps:
 	go get -d github.com/Sirupsen/logrus
 	go get -d github.com/coreos/go-systemd/activation
 	go get -d github.com/opencontainers/runc/libcontainer/user
-	go get -d github.com/Microsoft/go-winio
-	go get -d golang.org/x/sys/windows
 .PHONY: deps
 
 lint:
@@ -81,7 +72,6 @@ build-all: deps guard-VERSION $(foreach PLATFORM,$(PLATFORMS),dist/$(PLATFORM)/.
 .PHONY: build-all
 
 dist: guard-VERSION build-all \
-$(foreach PLATFORM,$(PLATFORMS_ZIP),dist/docker-volume-glusterfs-$(VERSION)-$(PLATFORM).zip) \
 $(foreach PLATFORM,$(PLATFORMS_TAR),dist/docker-volume-glusterfs-$(VERSION)-$(PLATFORM).tar.gz)
 .PHONY:	dist
 
@@ -101,12 +91,6 @@ dist/%/.built:
 	$(FLAGS_$*) go build -ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}" -o dist/$*/docker-volume-glusterfs$(EXTENSION_$*) $(wildcard ../*.go)
 	cp LICENSE $(dir $@)
 	touch $@
-
-dist/docker-volume-glusterfs-$(VERSION)-%.zip:
-	$(call msg,"Create ZIP for $*")
-	rm -f $@
-	mkdir -p $(dir $@)
-	zip -j $@ dist/$*/* -x .built
 
 dist/docker-volume-glusterfs-$(VERSION)-%.tar.gz:
 	$(call msg,"Create TAR for $*")
