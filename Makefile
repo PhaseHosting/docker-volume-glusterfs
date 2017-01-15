@@ -40,13 +40,20 @@ build: guard-VERSION deps
 deps:
 	$(call msg,"Get dependencies")
 	go get -t ./...
-	go get -d github.com/golang/lint/golint
 	go get -d github.com/Sirupsen/logrus
 	go get -d github.com/coreos/go-systemd/activation
 	go get -d github.com/opencontainers/runc/libcontainer/user
 	go get -d github.com/Microsoft/go-winio
 	go get -d golang.org/x/sys/windows
 .PHONY: deps
+
+lint:
+	$(call msg,"Linting source code")
+	go get github.com/golang/lint/golint
+	golint 
+	$(call msg,"Linting CI config")
+	build/lint-ci.sh
+.PHONY: lint
 
 install: guard-VERSION build
 	$(call msg,"Install docker-volume-glusterfs")
