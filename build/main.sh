@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ev
+set -e
 
 if [ "${TRAVIS_TAG}" == "" ]; then
 	export VERSION=`git rev-parse --abbrev-ref HEAD`;
