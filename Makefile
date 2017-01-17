@@ -2,11 +2,15 @@
 
 ################################################################################
 
+PROGRAM             = docker-volume-glusterfs
+PACKAGE             = $(PROGRAM)
 
 BUILD               = $(shell git rev-parse HEAD)
 
 PLATFORMS           = linux_amd64 linux_386 linux_arm darwin_amd64 freebsd_amd64 freebsd_386
 PLATFORMS_TAR       = linux_amd64 linux_386 linux_arm darwin_amd64 freebsd_amd64 freebsd_386
+PLATFORMS_DEB       = linux_amd64 linux_386 linux_arm
+CURRENT_PLATFORM    = $(shell go env GOOS)_$(shell go env GOARCH)
 
 FLAGS_all           = GOPATH=$(GOPATH)
 FLAGS_linux_amd64   = $(FLAGS_all) GOOS=linux GOARCH=amd64
@@ -44,17 +48,21 @@ lint:
 	golint 
 	$(call msg,"Linting CI config")
 	build/lint-ci.sh
+#	probably requires 'apt-get install lintian'
+#	$(call msg,"Linting Debian Packages")
+#	lintian
 .PHONY: lint
 
-install: guard-VERSION build
-	$(call msg,"Install docker-volume-glusterfs")
-	mkdir -p /usr/local/bin/
-	cp docker-volume-glusterfs /usr/local/bin/
-.PHONY:	install
+# install the current OS & architecture
+install: guard-VERSION deps install/$(CURRENT_PLATFORM)
+.PHONY: install
 
 uninstall:
 	$(call msg,"Uninstall docker-volume-glusterfs")
-	rm -f /usr/local/bin/docker-volume-glusterfs
+	# Don't delete the configuration files in etc. That's not nice.
+	rm -f $(DESTDIR)/usr/sbin/$(PROGRAM)
+	rm -f $(DESTDIR)/lib/systemd/system/$(PROGRAM).service
+	rm -Rf $(DESTDIR)/usr/share/doc/$(PROGRAM)
 .PHONY:	uninstall
 
 test: deps
@@ -81,8 +89,48 @@ release: guard-VERSION dist
 	git push --tags
 .PHONY: tag-release
 
+package: build-all \
+$(foreach PLATFORM,$(PLATFORMS_DEB),dist/$(PLATFORM)/.deb)
+.PHONY: package
 
 ################################################################################
+
+install/%: dist/%/.built
+	$(call msg,"Install $(PROGRAM)")
+	install -D dist/$*/docker-volume-glusterfs $(DESTDIR)/usr/sbin/$(PROGRAM)
+	install -D init-systems/systemd/etc/systemd/system/docker-volume-glusterfs.service $(DESTDIR)/lib/systemd/system/$(PROGRAM).service
+	install -D init-systems/systemd/etc/docker-volume-glusterfs.conf $(DESTDIR)/etc/$(PROGRAM).conf
+	install -D init-systems/upstart/etc/default/docker-volume-glusterfs $(DESTDIR)/etc/default/$(PROGRAM)
+	install -D init-systems/upstart/etc/init/docker-volume-glusterfs.conf $(DESTDIR)/etc/init/$(PROGRAM).conf
+	install -D LICENSE $(DESTDIR)/usr/share/doc/$(PROGRAM)/copyright
+.PHONY:	install/%
+
+# needs FPM
+# apt-get install ruby ruby-dev && gem install -N fpm
+# TODO: figure out how to deploy
+# TODO: figure out how to specify architecture right
+dist/%/.deb: dist/%/.built
+	$(call msg,"Build Debian package for $*")
+	fpm -s dir -t deb -n $(PACKAGE) -v $(VERSION) \
+		--license MIT \
+		--category TODO \
+		--depends 'docker-engine' \
+		--depends 'glusterfs-client (>= 3.5.0)' \
+		--depends 'glusterfs-client (<< 3.7.0)' \
+		--depends 'systemd' \
+		--architecture native \
+		--maintainer 'Patrick Watson <TODO>' \
+		--description 'This package provides the ability for docker to mount glusterfs volumes.' \
+		--url 'http://github.com/watson81/docker-volume-glusterfs' \
+		--deb-priority optional \
+		--deb-default init-systems/upstart/etc/default/docker-volume-glusterfs \
+		--deb-upstart init-systems/upstart/etc/init/docker-volume-glusterfs.conf \
+		--deb-systemd init-systems/systemd/etc/systemd/system/docker-volume-glusterfs.service \
+		dist/$*/docker-volume-glusterfs=/usr/sbin/$(PROGRAM) \
+		init-systems/systemd/etc/docker-volume-glusterfs.conf=/etc/$(PROGRAM).conf \
+		LICENSE=/usr/share/doc/$(PROGRAM)/copyright
+	mv *.deb $(dir $@)
+	touch $@
 
 dist/%/.built:
 	$(call msg,"Build binary for $*")
@@ -96,7 +144,7 @@ dist/docker-volume-glusterfs-$(VERSION)-%.tar.gz:
 	$(call msg,"Create TAR for $*")
 	rm -f $@
 	mkdir -p $(dir $@)
-	tar czf $@ -C dist/$* --exclude=.built .
+	tar czf $@ -C dist/$* --exclude=.built --exclude=*.deb .
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
