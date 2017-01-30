@@ -112,7 +112,7 @@ install/%: dist/%/.built
 dist/%/.deb: dist/%/.built
 	$(call msg,"Build Debian package for $*")
 	fpm -s dir -t deb -n $(PACKAGE) -v $(VERSION) \
-		--license MIT \
+		--license LICENSE \
 		--category TODO \
 		--depends 'docker-engine' \
 		--depends 'glusterfs-client (>= 3.5.0)' \
