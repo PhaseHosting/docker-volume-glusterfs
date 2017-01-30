@@ -24,6 +24,10 @@ msg=@printf "\n\033[0;01m>>> %s\033[0m\n" $1
 
 .DEFAULT_GOAL := build
 
+targets:
+	@echo build deps lint install uninstall test clean build-all dist release
+.PHONY: targets
+
 build: guard-VERSION deps
 	$(call msg,"Build binary")
 	$(FLAGS_all) go build -ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}" -o docker-volume-glusterfs$(EXTENSION_$GOOS_$GOARCH) *.go
